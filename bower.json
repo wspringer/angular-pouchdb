@@ -1,0 +1,20 @@
+{
+  "name": "angular-pouchdb",
+  "version": "0.1.0-SNAPSHOT",
+  "authors": [
+    "Wilfred Springer <wilfredspringer@gmail.com>"
+  ],
+  "description": "Angular wrapper for PouchDB, making sure that callbacks are called within $rootScope.$apply(), and using $q promises instead of callbacks.",
+  "main": "angular-pouchdb.js",
+  "keywords": [
+    "angularjs",
+    "pouchdb"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/wspringer/angular-pouchdb",
+  "ignore": [
+    "**/.*",
+    "test",
+    "tests"
+  ]
+}

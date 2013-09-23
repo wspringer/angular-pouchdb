@@ -25,22 +25,22 @@ describe('pouchdb', function() {
       }).catch(function(error) {
         dump(error);
       }).finally(function() {
-                pouchdb.destroy('test').finally(function() {
-                    done = true;
-                });
-            });
+        pouchdb.destroy('test').finally(function() {
+          done = true;
         });
+      });
+    });
 
-        waitsFor(function() {
-            return done;
-        }, "Waiting till done", 2000);
-
-        runs(function() {
-            expect(stored).toBe(true);
-            expect(retrieved).not.toBeNull();
-            expect(retrieved.title).toBe('bar');
-        });
+    waitsFor(function() {
+      return done;
+    }, "Waiting till done", 2000);
     
-    }));
-
+    runs(function() {
+      expect(stored).toBe(true);
+      expect(retrieved).not.toBeNull();
+      expect(retrieved.title).toBe('bar');
+    });
+    
+  }));
+  
 });

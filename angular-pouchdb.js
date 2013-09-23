@@ -44,7 +44,16 @@
               remove: qify(db.remove),
               bulkDocs: qify(db.bulkDocs),
               allDocs: qify(db.allDocs),
-              changes: qify(db.changes),
+              changes: function(options) {
+                var clone;
+                clone = angular.copy(options);
+                clone.onChange = function(change) {
+                  return $rootScope.$apply(function() {
+                    return options.onChange(change);
+                  });
+                };
+                return db.changes(clone);
+              },
               putAttachment: qify(db.putAttachment),
               getAttachment: qify(db.getAttachment),
               removeAttachment: qify(db.removeAttachment),

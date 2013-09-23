@@ -1,4 +1,4 @@
-# Readme
+# AngularJS PouchDB Support
 
 A simple wrapper for PouchDB, to make integration into AngularJS applications a breeze. So what does it do?
 

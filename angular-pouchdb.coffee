@@ -4,7 +4,6 @@ pouchdb = angular.module 'pouchdb', ['ng']
 slice = Array.prototype.slice
 
 pouchdb.provider 'pouchdb', ->
-  PouchDB.enableAllDbs = true
   withAllDbsEnabled: ->
     PouchDB.enableAllDbs = true
   $get: ($q, $rootScope) ->
@@ -29,7 +28,12 @@ pouchdb.provider 'pouchdb', ->
       remove: qify db.remove
       bulkDocs: qify db.bulkDocs
       allDocs: qify db.allDocs
-      changes: qify db.changes
+      changes: (options) ->
+        clone = angular.copy options
+        clone.onChange = (change) ->
+          $rootScope.$apply () ->
+            options.onChange change
+        db.changes clone
       putAttachment: qify db.putAttachment
       getAttachment: qify db.getAttachment
       removeAttachment: qify db.removeAttachment

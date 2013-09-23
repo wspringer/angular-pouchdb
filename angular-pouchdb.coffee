@@ -4,7 +4,6 @@ pouchdb = angular.module 'pouchdb', ['ng']
 slice = Array.prototype.slice
 
 pouchdb.provider 'pouchdb', ->
-  PouchDB.enableAllDbs = true
   withAllDbsEnabled: ->
     PouchDB.enableAllDbs = true
   $get: ($q, $rootScope) ->

@@ -7,7 +7,6 @@
   slice = Array.prototype.slice;
 
   pouchdb.provider('pouchdb', function() {
-    PouchDB.enableAllDbs = true;
     return {
       withAllDbsEnabled: function() {
         return PouchDB.enableAllDbs = true;

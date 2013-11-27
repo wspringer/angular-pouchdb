@@ -1,6 +1,6 @@
 {
   "name": "angular-pouchdb",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "authors": [
     "Wilfred Springer <wilfredspringer@gmail.com>"
   ],
@@ -18,5 +18,12 @@
     "tests",
     "external",
     "karma.conf.js"
-  ]
+  ],
+  "dependencies": {
+    "angular": "~1.2.3",
+    "pouchdb-nightly.min.js": "http://download.pouchdb.com/pouchdb-nightly.min.js"
+  },
+  "devDependencies": {
+    "angular-mocks": "~1.2.3"
+  }
 }

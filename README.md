@@ -19,7 +19,7 @@ A simple wrapper for PouchDB, to make integration into AngularJS applications a 
     pouchdb.destroy('testdb');
     
     // Add a document
-    db.put({_id: 'foo', name: 'bar'})
+    db.put({_id: 'foo', name: 'bar'});
     
     // Handle the output
     db.put({_id: 'foo', name: 'bar'}).then(function(response) {

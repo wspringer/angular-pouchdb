@@ -18,5 +18,12 @@
     "tests",
     "external",
     "karma.conf.js"
-  ]
+  ],
+  "dependencies": {
+    "angular": "~1.2.3",
+    "pouchdb-nightly.min.js": "http://download.pouchdb.com/pouchdb-nightly.min.js"
+  },
+  "devDependencies": {
+    "angular-mocks": "~1.2.3"
+  }
 }

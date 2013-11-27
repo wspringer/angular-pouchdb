@@ -10,9 +10,9 @@ basePath = '';
 files = [
   JASMINE,
   JASMINE_ADAPTER,
-  'external/angular.min.js',
-  'external/angular-mocks.js',
-  'external/pouchdb-nightly.js',
+  'bower_components/angular/angular.js',
+  'bower_components/angular-mocks/angular-mocks.js',
+  'bower_components/pouchdb-nightly.min.js/index.js',
   'angular-pouchdb.js',
   'test/**/*-spec.js'
 ];

@@ -8,6 +8,7 @@ A simple wrapper for PouchDB, to make integration into AngularJS applications a 
 
 ## Usage
 
+```js
     var app = angular.module('app', ['pouchdb']);
 
     // Now if you dependency inject pouchdb in a service, you can:
@@ -40,5 +41,5 @@ A simple wrapper for PouchDB, to make integration into AngularJS applications a 
             add: function(obj) { testdb.put(obj); }
         };
     });
-    
-    
+```
+

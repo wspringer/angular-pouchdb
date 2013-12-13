@@ -6,20 +6,21 @@ slice = Array.prototype.slice
 pouchdb.provider 'pouchdb', ->
   withAllDbsEnabled: ->
     PouchDB.enableAllDbs = true
-  $get: ($q, $rootScope) ->
+  $get: ($q, $rootScope, $timeout) ->
     qify = (fn) ->
       () ->
         deferred = $q.defer()
         callback = (err, res) ->
-          $rootScope.$apply () ->
-            if (err)
-              deferred.reject err
-            else
-              deferred.resolve res
+          $timeout ->
+            $rootScope.$apply () ->
+              if (err)
+                deferred.reject err
+              else
+                deferred.resolve res
         args = if arguments? then slice.call(arguments) else []
         args.push callback
         fn.apply this, args
-        deferred.promise      
+        deferred.promise
     create: (name, options) ->
       db = new PouchDB(name, options)
       put: qify db.put
@@ -44,4 +45,5 @@ pouchdb.provider 'pouchdb', ->
     allDbs: qify PouchDB.allDbs
     destroy: qify PouchDB.destroy
     replicate: PouchDB.replicate
-    
+
+

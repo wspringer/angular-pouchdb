@@ -7,7 +7,7 @@ A simple wrapper for PouchDB, to make integration into AngularJS applications a 
 * It will make sure Angular is aware of asynchronous updates. (It will make sure it uses `$rootScope.$apply()` in cases where it makes sense.)
 
 ## Usage
-
+```javascript
     var app = angular.module('app', ['pouchdb']);
 
     // Now if you dependency inject pouchdb in a service, you can:
@@ -40,5 +40,5 @@ A simple wrapper for PouchDB, to make integration into AngularJS applications a 
             add: function(obj) { testdb.put(obj); }
         };
     });
-    
+```
     

@@ -56,13 +56,12 @@ pouchdb.directive 'pouchRepeat',
     transclude: 'element'
     compile: (elem, attrs, transclude) ->
       ($scope, $element, $attr) ->
-        console.info '$transclude', transclude
         parent = $element.parent()
-        console.info $attr.pouchRepeat
         [cursor, collection] = /^\s*([a-zA-Z0-9]+)\s*in\s*([a-zA-Z0-9]+)\s*$/.exec($attr.pouchRepeat).splice(1)
 
         $scope.$watch collection
           , ->
+
             displayRow = (doc) ->
               childScope = $scope.$new()
               childScope[cursor] = doc

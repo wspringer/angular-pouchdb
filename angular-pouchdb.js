@@ -70,4 +70,41 @@
     };
   });
 
+  pouchdb.directive('pouchRepeat', function() {
+    return {
+      transclude: 'element',
+      compile: function(elem, attrs, transclude) {
+        return function($scope, $element, $attr) {
+          var collection, cursor, parent, _ref;
+          console.info('$transclude', transclude);
+          parent = $element.parent();
+          console.info($attr.pouchRepeat);
+          _ref = /^\s*([a-zA-Z0-9]+)\s*in\s*([a-zA-Z0-9]+)\s*$/.exec($attr.pouchRepeat).splice(1), cursor = _ref[0], collection = _ref[1];
+          return $scope.$watch(collection, function() {
+            var displayAll, displayRow;
+            displayRow = function(doc) {
+              var childScope;
+              childScope = $scope.$new();
+              childScope[cursor] = doc;
+              return transclude(childScope, function(clone) {
+                return parent.append(clone);
+              });
+            };
+            displayAll = function(docs) {
+              var doc, _i, _len, _ref1, _results;
+              _ref1 = docs.rows;
+              _results = [];
+              for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+                doc = _ref1[_i];
+                _results.push(displayRow(doc));
+              }
+              return _results;
+            };
+            $scope[collection].allDocs().then(displayAll);
+          });
+        };
+      }
+    };
+  });
+
 }).call(this);

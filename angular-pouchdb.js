@@ -121,7 +121,7 @@
                     if (block != null) {
                       return block.scope[cursor] = update.doc;
                     } else {
-                      return displayDoc(doc);
+                      return displayDoc(update.doc);
                     }
                   }
                 }

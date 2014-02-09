@@ -91,6 +91,6 @@ pouchdb.directive 'pouchRepeat',
                     if block?
                       block.scope[cursor] = update.doc
                     else
-                      displayDoc(doc)
+                      displayDoc(update.doc)
 
             return

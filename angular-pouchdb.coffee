@@ -59,17 +59,38 @@ pouchdb.directive 'pouchRepeat',
         parent = $element.parent()
         [cursor, collection] = /^\s*([a-zA-Z0-9]+)\s*in\s*([a-zA-Z0-9]+)\s*$/.exec($attr.pouchRepeat).splice(1)
 
+        blocks = {}
+
         $scope.$watch collection
           , ->
-
-            displayRow = (doc) ->
+            displayDoc = (doc) ->
               childScope = $scope.$new()
               childScope[cursor] = doc
               transclude childScope, (clone) ->
+                blocks[doc._id] =
+                  clone: clone
+                  scope: childScope
                 parent.append(clone)
 
             displayAll = (docs) ->
-              displayRow(doc) for doc in docs.rows
+              displayDoc(row.doc) for row in docs.rows
 
-            $scope[collection].allDocs().then(displayAll)
+            $scope[collection].allDocs({include_docs: true}).then(displayAll)
+
+            $scope[collection].info().then (info) ->
+              $scope[collection].changes
+                include_docs: true
+                continuous: true
+                since: info.update_seq
+                onChange: (update) ->
+                  block = blocks[update.id]
+                  if update.deleted
+                    block.clone.remove()
+                    block.scope.$destroy()
+                  else
+                    if block?
+                      block.scope[cursor] = update.doc
+                    else
+                      displayDoc(doc)
+
             return

@@ -75,32 +75,58 @@
       transclude: 'element',
       compile: function(elem, attrs, transclude) {
         return function($scope, $element, $attr) {
-          var collection, cursor, parent, _ref;
-          console.info('$transclude', transclude);
+          var blocks, collection, cursor, parent, _ref;
           parent = $element.parent();
-          console.info($attr.pouchRepeat);
           _ref = /^\s*([a-zA-Z0-9]+)\s*in\s*([a-zA-Z0-9]+)\s*$/.exec($attr.pouchRepeat).splice(1), cursor = _ref[0], collection = _ref[1];
+          blocks = {};
           return $scope.$watch(collection, function() {
-            var displayAll, displayRow;
-            displayRow = function(doc) {
+            var displayAll, displayDoc;
+            displayDoc = function(doc) {
               var childScope;
               childScope = $scope.$new();
               childScope[cursor] = doc;
               return transclude(childScope, function(clone) {
+                blocks[doc._id] = {
+                  clone: clone,
+                  scope: childScope
+                };
                 return parent.append(clone);
               });
             };
             displayAll = function(docs) {
-              var doc, _i, _len, _ref1, _results;
+              var row, _i, _len, _ref1, _results;
               _ref1 = docs.rows;
               _results = [];
               for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-                doc = _ref1[_i];
-                _results.push(displayRow(doc));
+                row = _ref1[_i];
+                _results.push(displayDoc(row.doc));
               }
               return _results;
             };
-            $scope[collection].allDocs().then(displayAll);
+            $scope[collection].allDocs({
+              include_docs: true
+            }).then(displayAll);
+            $scope[collection].info().then(function(info) {
+              return $scope[collection].changes({
+                include_docs: true,
+                continuous: true,
+                since: info.update_seq,
+                onChange: function(update) {
+                  var block;
+                  block = blocks[update.id];
+                  if (update.deleted) {
+                    block.clone.remove();
+                    return block.scope.$destroy();
+                  } else {
+                    if (block != null) {
+                      return block.scope[cursor] = update.doc;
+                    } else {
+                      return displayDoc(doc);
+                    }
+                  }
+                }
+              });
+            });
           });
         };
       }

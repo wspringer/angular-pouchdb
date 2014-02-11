@@ -6,4 +6,7 @@
 # v. 0.1.3
 
 * Add a `pouch-repeat` directive, to traverse all elements in a collection.
+* Add support for sorting in `pouch-repeat`.
+
+
 

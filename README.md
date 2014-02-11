@@ -49,5 +49,12 @@ A simple wrapper for PouchDB, to make integration into AngularJS applications a 
       </li>
     </ul>
 
+    // To traverse and display all elements in a database, and sort based on some fields
+    <ul>
+      <li pouch-repeat="person in persons order by name.first,name.last">
+        {{item.name}}
+      </li>
+    </ul>
+
     
     

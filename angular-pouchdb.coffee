@@ -58,7 +58,7 @@ pouchdb.directive 'pouchRepeat',
       ($scope, $element, $attr) ->
         parent = $element.parent()
         [cursor, collection, sort] =
-          /^\s*([a-zA-Z0-9]+)\s*in\s*([a-zA-Z0-9]+)\s*(?:order by\s*([a-zA-Z0-9\.]+))?$/.exec($attr.pouchRepeat).splice(1)
+          /^\s*([a-zA-Z0-9]+)\s*in\s*([a-zA-Z0-9]+)\s*(?:order by\s*([a-zA-Z0-9\.,]+))?$/.exec($attr.pouchRepeat).splice(1)
         blocks = {}
 
         $scope.$watch collection
@@ -81,16 +81,22 @@ pouchdb.directive 'pouchRepeat',
             # Not using query, since the map function doesn't accept emit as an argument just yet.
             process =
               if sort?
-                getter = $parse(sort)
-                sortorder = (first, second) ->
-                  x = getter(first)
-                  y = getter(second)
-                  if x < y
-                    -1
-                  else if x > y
-                    1
-                  else
+                getters =
+                  $parse(fld) for fld in sort.split(',')
+                calculate = (first, second, getters, idx) ->
+                  if idx >= getters.length
                     0
+                  else
+                    getter = getters[idx]
+                    x = getter(first)
+                    y = getter(second)
+                    if x < y
+                      -1
+                    else if x > y
+                      1
+                    else
+                      calculate(first, second, getters, idx + 1)
+                sortorder = (first, second) -> calculate(first, second, getters, 0)
                 (result) -> displayAll(extractDocs(result).sort(sortorder))
               else
                 (result) -> displayAll(extractDocs(result))

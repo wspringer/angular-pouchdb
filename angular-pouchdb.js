@@ -77,10 +77,10 @@
         return function($scope, $element, $attr) {
           var blocks, collection, cursor, parent, sort, _ref;
           parent = $element.parent();
-          _ref = /^\s*([a-zA-Z0-9]+)\s*in\s*([a-zA-Z0-9]+)\s*(?:order by\s*([a-zA-Z0-9\.]+))?$/.exec($attr.pouchRepeat).splice(1), cursor = _ref[0], collection = _ref[1], sort = _ref[2];
+          _ref = /^\s*([a-zA-Z0-9]+)\s*in\s*([a-zA-Z0-9]+)\s*(?:order by\s*([a-zA-Z0-9\.,]+))?$/.exec($attr.pouchRepeat).splice(1), cursor = _ref[0], collection = _ref[1], sort = _ref[2];
           blocks = {};
           return $scope.$watch(collection, function() {
-            var displayAll, displayDoc, extractDocs, getter, process, sortorder;
+            var calculate, displayAll, displayDoc, extractDocs, fld, getters, process, sortorder;
             displayDoc = function(doc) {
               var childScope;
               childScope = $scope.$new();
@@ -112,17 +112,33 @@
               }
               return _results;
             };
-            process = sort != null ? (getter = $parse(sort), sortorder = function(first, second) {
-              var x, y;
-              x = getter(first);
-              y = getter(second);
-              if (x < y) {
-                return -1;
-              } else if (x > y) {
-                return 1;
-              } else {
-                return 0;
+            process = sort != null ? (getters = (function() {
+              var _i, _len, _ref1, _results;
+              _ref1 = sort.split(',');
+              _results = [];
+              for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+                fld = _ref1[_i];
+                _results.push($parse(fld));
               }
+              return _results;
+            })(), calculate = function(first, second, getters, idx) {
+              var getter, x, y;
+              if (idx >= getters.length) {
+                return 0;
+              } else {
+                getter = getters[idx];
+                x = getter(first);
+                y = getter(second);
+                if (x < y) {
+                  return -1;
+                } else if (x > y) {
+                  return 1;
+                } else {
+                  return calculate(first, second, getters, idx + 1);
+                }
+              }
+            }, sortorder = function(first, second) {
+              return calculate(first, second, getters, 0);
             }, function(result) {
               return displayAll(extractDocs(result).sort(sortorder));
             }) : function(result) {

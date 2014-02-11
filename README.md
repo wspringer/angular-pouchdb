@@ -40,5 +40,21 @@ A simple wrapper for PouchDB, to make integration into AngularJS applications a 
             add: function(obj) { testdb.put(obj); }
         };
     });
+
+    // To traverse and display all elements in a database (assuming that
+    // database is exposed as testdb on the $scope object):
+    <ul>
+      <li pouch-repeat="item in testdb">
+        {{item.name}}
+      </li>
+    </ul>
+
+    // To traverse and display all elements in a database, and sort based on some fields
+    <ul>
+      <li pouch-repeat="person in persons order by name.first,name.last">
+        {{item.name}}
+      </li>
+    </ul>
+
     
     

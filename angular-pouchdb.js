@@ -70,4 +70,108 @@
     };
   });
 
+  pouchdb.directive('pouchRepeat', function($parse) {
+    return {
+      transclude: 'element',
+      compile: function(elem, attrs, transclude) {
+        return function($scope, $element, $attr) {
+          var blocks, collection, cursor, parent, sort, _ref;
+          parent = $element.parent();
+          _ref = /^\s*([a-zA-Z0-9]+)\s*in\s*([a-zA-Z0-9]+)\s*(?:order by\s*([a-zA-Z0-9\.,]+))?$/.exec($attr.pouchRepeat).splice(1), cursor = _ref[0], collection = _ref[1], sort = _ref[2];
+          blocks = {};
+          return $scope.$watch(collection, function() {
+            var calculate, displayAll, displayDoc, extractDocs, fld, getters, process, sortorder;
+            displayDoc = function(doc) {
+              var childScope;
+              childScope = $scope.$new();
+              childScope[cursor] = doc;
+              return transclude(childScope, function(clone) {
+                blocks[doc._id] = {
+                  clone: clone,
+                  scope: childScope
+                };
+                return parent.append(clone);
+              });
+            };
+            displayAll = function(docs) {
+              var doc, _i, _len, _results;
+              _results = [];
+              for (_i = 0, _len = docs.length; _i < _len; _i++) {
+                doc = docs[_i];
+                _results.push(displayDoc(doc));
+              }
+              return _results;
+            };
+            extractDocs = function(result) {
+              var row, _i, _len, _ref1, _results;
+              _ref1 = result.rows;
+              _results = [];
+              for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+                row = _ref1[_i];
+                _results.push(row.doc);
+              }
+              return _results;
+            };
+            process = sort != null ? (getters = (function() {
+              var _i, _len, _ref1, _results;
+              _ref1 = sort.split(',');
+              _results = [];
+              for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+                fld = _ref1[_i];
+                _results.push($parse(fld));
+              }
+              return _results;
+            })(), calculate = function(first, second, getters, idx) {
+              var getter, x, y;
+              if (idx >= getters.length) {
+                return 0;
+              } else {
+                getter = getters[idx];
+                x = getter(first);
+                y = getter(second);
+                if (x < y) {
+                  return -1;
+                } else if (x > y) {
+                  return 1;
+                } else {
+                  return calculate(first, second, getters, idx + 1);
+                }
+              }
+            }, sortorder = function(first, second) {
+              return calculate(first, second, getters, 0);
+            }, function(result) {
+              return displayAll(extractDocs(result).sort(sortorder));
+            }) : function(result) {
+              return displayAll(extractDocs(result));
+            };
+            $scope[collection].allDocs({
+              include_docs: true
+            }).then(process);
+            $scope[collection].info().then(function(info) {
+              return $scope[collection].changes({
+                include_docs: true,
+                continuous: true,
+                since: info.update_seq,
+                onChange: function(update) {
+                  var block;
+                  block = blocks[update.id];
+                  if (update.deleted) {
+                    block.clone.remove();
+                    return block.scope.$destroy();
+                  } else {
+                    if (block != null) {
+                      return block.scope[cursor] = update.doc;
+                    } else {
+                      return displayDoc(update.doc);
+                    }
+                  }
+                }
+              });
+            });
+          });
+        };
+      }
+    };
+  });
+
 }).call(this);

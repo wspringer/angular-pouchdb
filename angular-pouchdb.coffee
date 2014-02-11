@@ -4,9 +4,12 @@ pouchdb = angular.module 'pouchdb', ['ng']
 slice = Array.prototype.slice
 
 pouchdb.provider 'pouchdb', ->
+
   withAllDbsEnabled: ->
     PouchDB.enableAllDbs = true
+
   $get: ($q, $rootScope) ->
+
     qify = (fn) ->
       () ->
         deferred = $q.defer()
@@ -20,6 +23,7 @@ pouchdb.provider 'pouchdb', ->
         args.push callback
         fn.apply this, args
         deferred.promise      
+
     create: (name, options) ->
       db = new PouchDB(name, options)
       put: qify db.put
@@ -41,7 +45,77 @@ pouchdb.provider 'pouchdb', ->
       info: qify db.info
       compact: qify db.compact
       revsDiff: qify db.revsDiff
+
     allDbs: qify PouchDB.allDbs
     destroy: qify PouchDB.destroy
     replicate: PouchDB.replicate
-    
+
+# pouch-repeat="name in collection"
+pouchdb.directive 'pouchRepeat',
+  ($parse) ->
+    transclude: 'element'
+    compile: (elem, attrs, transclude) ->
+      ($scope, $element, $attr) ->
+        parent = $element.parent()
+        [cursor, collection, sort] =
+          /^\s*([a-zA-Z0-9]+)\s*in\s*([a-zA-Z0-9]+)\s*(?:order by\s*([a-zA-Z0-9\.,]+))?$/.exec($attr.pouchRepeat).splice(1)
+        blocks = {}
+
+        $scope.$watch collection
+          , ->
+            displayDoc = (doc) ->
+              childScope = $scope.$new()
+              childScope[cursor] = doc
+              transclude childScope, (clone) ->
+                blocks[doc._id] =
+                  clone: clone
+                  scope: childScope
+                parent.append(clone)
+
+            displayAll = (docs) ->
+              displayDoc(doc) for doc in docs
+
+            extractDocs = (result) ->
+              row.doc for row in result.rows
+
+            # Not using query, since the map function doesn't accept emit as an argument just yet.
+            process =
+              if sort?
+                getters =
+                  $parse(fld) for fld in sort.split(',')
+                calculate = (first, second, getters, idx) ->
+                  if idx >= getters.length
+                    0
+                  else
+                    getter = getters[idx]
+                    x = getter(first)
+                    y = getter(second)
+                    if x < y
+                      -1
+                    else if x > y
+                      1
+                    else
+                      calculate(first, second, getters, idx + 1)
+                sortorder = (first, second) -> calculate(first, second, getters, 0)
+                (result) -> displayAll(extractDocs(result).sort(sortorder))
+              else
+                (result) -> displayAll(extractDocs(result))
+
+            $scope[collection].allDocs({include_docs: true}).then(process)
+
+            $scope[collection].info().then (info) ->
+              $scope[collection].changes
+                include_docs: true
+                continuous: true
+                since: info.update_seq
+                onChange: (update) ->
+                  block = blocks[update.id]
+                  if update.deleted
+                    block.clone.remove()
+                    block.scope.$destroy()
+                  else
+                    if block?
+                      block.scope[cursor] = update.doc
+                    else
+                      displayDoc(update.doc)
+            return

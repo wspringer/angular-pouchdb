@@ -37,6 +37,7 @@
             var db;
             db = new PouchDB(name, options);
             return {
+              id: db.id,
               put: qify(db.put),
               post: qify(db.post),
               get: qify(db.get),

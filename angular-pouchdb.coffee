@@ -26,6 +26,7 @@ pouchdb.provider 'pouchdb', ->
 
     create: (name, options) ->
       db = new PouchDB(name, options)
+      id: db.id
       put: qify db.put
       post: qify db.post
       get: qify db.get

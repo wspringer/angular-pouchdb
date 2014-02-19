@@ -55,6 +55,7 @@ pouchdb.provider 'pouchdb', ->
 pouchdb.directive 'pouchRepeat',
   ($parse) ->
     transclude: 'element'
+    priority: 10
     compile: (elem, attrs, transclude) ->
       ($scope, $element, $attr) ->
         parent = $element.parent()

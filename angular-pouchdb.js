@@ -74,6 +74,7 @@
   pouchdb.directive('pouchRepeat', function($parse) {
     return {
       transclude: 'element',
+      priority: 10,
       compile: function(elem, attrs, transclude) {
         return function($scope, $element, $attr) {
           var blocks, collection, cursor, parent, sort, _ref;

@@ -82,7 +82,7 @@
           _ref = /^\s*([a-zA-Z0-9]+)\s*in\s*([a-zA-Z0-9]+)\s*(?:order by\s*([a-zA-Z0-9\.,]+))?$/.exec($attr.pouchRepeat).splice(1), cursor = _ref[0], collection = _ref[1], sort = _ref[2];
           blocks = {};
           return $scope.$watch(collection, function() {
-            var calculate, displayAll, displayDoc, extractDocs, fld, getters, process, sortorder;
+            var calculate, displayAll, displayDoc, extractDocs, fld, getters, process, sortOrder;
             displayDoc = function(doc) {
               var childScope;
               childScope = $scope.$new();
@@ -114,7 +114,7 @@
               }
               return _results;
             };
-            process = sort != null ? (getters = (function() {
+            sortOrder = sort != null ? (getters = (function() {
               var _i, _len, _ref1, _results;
               _ref1 = sort.split(',');
               _results = [];
@@ -139,11 +139,12 @@
                   return calculate(first, second, getters, idx + 1);
                 }
               }
-            }, sortorder = function(first, second) {
+            }, function(first, second) {
               return calculate(first, second, getters, 0);
-            }, function(result) {
-              return displayAll(extractDocs(result).sort(sortorder));
-            }) : function(result) {
+            }) : null;
+            process = sortOrder != null ? function(result) {
+              return displayAll(extractDocs(result).sort(sortOrder));
+            } : function(result) {
               return displayAll(extractDocs(result));
             };
             $scope[collection].allDocs({

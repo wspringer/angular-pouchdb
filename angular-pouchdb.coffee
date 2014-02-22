@@ -80,8 +80,7 @@ pouchdb.directive 'pouchRepeat',
             extractDocs = (result) ->
               row.doc for row in result.rows
 
-            # Not using query, since the map function doesn't accept emit as an argument just yet.
-            process =
+            sortOrder =
               if sort?
                 getters =
                   $parse(fld) for fld in sort.split(',')
@@ -98,8 +97,14 @@ pouchdb.directive 'pouchRepeat',
                       1
                     else
                       calculate(first, second, getters, idx + 1)
-                sortorder = (first, second) -> calculate(first, second, getters, 0)
-                (result) -> displayAll(extractDocs(result).sort(sortorder))
+                (first, second) -> calculate(first, second, getters, 0)
+              else
+                null
+
+            # Not using query, since the map function doesn't accept emit as an argument just yet.
+            process =
+              if sortOrder?
+                (result) -> displayAll(extractDocs(result).sort(sortOrder))
               else
                 (result) -> displayAll(extractDocs(result))
 

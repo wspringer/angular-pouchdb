@@ -23,7 +23,22 @@ sortedIndex = (array, value, callback) ->
 # Assume sorted index
 indexOf = (array, value, callback) ->
   idx = sortedIndex(array, value, callback)
-  if array[idx] == value idx else -1
+  if array[idx] == value then idx else -1
+
+find = (array, cond) ->
+  console.info 'Finding'
+  pos = 0
+  while pos < array.length and !cond(array[pos])
+    pos = pos + 1
+  if pos < array.length
+    console.info 'Found it'
+    pos
+  else
+    console.info 'Didn\'t find it'
+    -1
+
+exists = (array, cond) ->
+  find(array, cond) >= 0
 
 
 
@@ -95,20 +110,12 @@ pouchdb.directive 'pouchRepeat',
           if sort?
             getters =
               $parse(fld) for fld in sort.split(',')
-            console.info 'getters', getters
             (doc) ->
               for getter in getters
                 getter(doc)
           else null
 
-#        sortOrder = (first, second, fn) ->
-#          mappedFirst = fn(first)
-#          mappedSecond = fn(second)
-#          if mappedFirst < mappedSecond -1
-#          else if mappedFirst > mappedSecond 1
-#          else 0
-
-        add =  (doc) ->
+        add = (doc) ->
           childScope = $scope.$new();
           childScope[cursor] = doc
           transclude childScope, (clone) ->
@@ -119,23 +126,14 @@ pouchdb.directive 'pouchRepeat',
               vector : if vectorOf? then vectorOf(doc) else null
             last = blocks[blocks.length - 1]
             if vectorOf?
-              console.info 'Block vector', block.vector
-              console.info 'Blocks', blocks
               index = sortedIndex(blocks, block, (block) -> block.vector)
-              console.info 'Index', index
               preceding =
                 if (index > 0)
                   blocks[index - 1]
                 else
                   null
-              if preceding? then console.info "Adding after", doc, preceding.doc
               $animate.enter(clone, parent, if preceding? then preceding.clone else top)
-              blocks = concat.call(
-                slice.call(blocks, 0, index - 1),
-                [block],
-                slice.call(blocks, index)
-              )
-
+              blocks.splice(index, 0, block)
             else
               blocks.push(block)
               if last?
@@ -143,41 +141,34 @@ pouchdb.directive 'pouchRepeat',
               else
                 $animate.enter(clone, parent, top)
 
-        update = (doc) ->
-          wrapped =
-            doc: doc
-          idx = indexOf(blocks, wrapped, (block) -> block.doc.id)
+        modify = (doc) ->
+          idx = find(blocks, (block) -> block.doc._id == doc._id)
           block = blocks[idx]
           block.scope[cursor] = doc
-          block.vector = vectorOf(doc)
-          stripped = concat.call(
-            slice.call(blocks, 0, idx - 1),
-            slice.call(blocks, idx + 1)
-          )
-          newidx = sortedIndex(stripped, block, (block) -> block.vector)
-          blocks = concat.call(
-            slice.call(blocks, 0, newidx - 1),
-            [block],
-            slice.call(blocks, newidx)
-          )
-          $animate.move(
-            block.clone,
-            parent,
-            if newidx > 0 then blocks[newidx - 1] else top
-          )
+          if vectorOf?
+            console.info 'Repositioning'
+            block.vector = vectorOf(doc)
+            blocks.splice(idx, 1)
+            newidx = sortedIndex(blocks, block, (block) -> block.vector)
+            blocks.splice(newidx, 0, block)
+            $animate.move(
+              block.clone,
+              parent,
+              if newidx > 0 then blocks[newidx - 1].clone else top
+            )
 
-        remove = (doc) ->
-          wrapped =
-            doc: doc
-          idx = indexOf(blocks, wrapped, (block) -> block.doc.id)
+        remove = (id) ->
+          idx = find(blocks, (block) -> block.doc._id == id)
           block = blocks[idx]
-          if block? then block.scope.$destroy()
+          if block?
+            $animate.leave block.clone, ->
+              block.scope.$destroy()
 
 
 
 
         $scope.$watch collection
-          , ->
+          , () ->
             # Not using query, since the map function doesn't accept emit as an argument just yet.
             process = (result) ->
               for row in result.rows
@@ -190,11 +181,10 @@ pouchdb.directive 'pouchRepeat',
                 continuous: true
                 since: info.update_seq
                 onChange: (update) ->
-                  if update.deleted then remove(update.doc)
+                  if update.deleted then remove(update.doc._id)
                   else
-                    idx = indexOf(blocks, { doc: updated.doc }, (block) -> block.doc.id)
-                    if idx >= 0
-                      update(update.doc)
+                    if exists(blocks, (block) -> block.doc._id == update.doc._id)
+                      modify(update.doc)
                     else
                       add(update.doc)
             return

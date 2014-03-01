@@ -20,25 +20,14 @@ sortedIndex = (array, value, callback) ->
       high = mid
   return low
 
-# Assume sorted index
-indexOf = (array, value, callback) ->
-  idx = sortedIndex(array, value, callback)
-  if array[idx] == value then idx else -1
-
-find = (array, cond) ->
-  console.info 'Finding'
+indexOf = (array, cond) ->
   pos = 0
   while pos < array.length and !cond(array[pos])
     pos = pos + 1
-  if pos < array.length
-    console.info 'Found it'
-    pos
-  else
-    console.info 'Didn\'t find it'
-    -1
+  if pos < array.length then pos else -1
 
 exists = (array, cond) ->
-  find(array, cond) >= 0
+  indexOf(array, cond) >= 0
 
 
 
@@ -142,11 +131,10 @@ pouchdb.directive 'pouchRepeat',
                 $animate.enter(clone, parent, top)
 
         modify = (doc) ->
-          idx = find(blocks, (block) -> block.doc._id == doc._id)
+          idx = indexOf(blocks, (block) -> block.doc._id == doc._id)
           block = blocks[idx]
           block.scope[cursor] = doc
           if vectorOf?
-            console.info 'Repositioning'
             block.vector = vectorOf(doc)
             blocks.splice(idx, 1)
             newidx = sortedIndex(blocks, block, (block) -> block.vector)
@@ -158,13 +146,11 @@ pouchdb.directive 'pouchRepeat',
             )
 
         remove = (id) ->
-          idx = find(blocks, (block) -> block.doc._id == id)
+          idx = indexOf(blocks, (block) -> block.doc._id == id)
           block = blocks[idx]
           if block?
             $animate.leave block.clone, ->
               block.scope.$destroy()
-
-
 
 
         $scope.$watch collection

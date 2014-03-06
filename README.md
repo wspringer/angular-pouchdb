@@ -1,3 +1,7 @@
+# Caution
+
+Integration with PouchDB is currently broken. The `pouch2` branch seems to some extent, but fails while replicating data. Work is underway to fix it. 
+
 # AngularJS PouchDB Support
 
 A simple wrapper for PouchDB, to make integration into AngularJS applications a breeze. So what does it do?

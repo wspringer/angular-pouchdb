@@ -12,6 +12,8 @@
 
 * Add support for inserting new elements into exactly the right position, based on your sort order.
 * Using ngAnimate to add, remove and move elements.
+* Switching to PouchDB 2.0
+
 
 
 

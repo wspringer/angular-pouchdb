@@ -12,7 +12,13 @@ A simple wrapper for PouchDB, to make integration into AngularJS applications a 
 
 ## Usage
 
-First you will need pouchdb as a dependency. 
+First you need to get `angular-pouchdb`. Using bower, it's easy:
+
+```
+  bower install -S angular-pouchdb
+```
+
+Then you will need to register pouchdb as a dependency. 
 
 ```javascript
     var app = angular.module('app', ['pouchdb']);

@@ -6,9 +6,9 @@ A simple wrapper for PouchDB, to make integration into AngularJS applications a 
 * It uses `$q`-based promises instead of callbacks: `db.put({...})` will return a promise with the results, and no longer accepts a callback as the last parameter. The same goes for all other operations that normally required callbacks.
 * It will make sure Angular is aware of asynchronous updates. (It will make sure it uses `$rootScope.$apply()` in cases where it makes sense.)
 * It has a directive for traversing the contents of your database:
-** Sorting it,
-** Injecting data coming into your database in the right spot,
-** Using ngAnimate allowing you to animate your incoming data into place.
+  * Sorting it,
+  * Injecting data coming into your database in the right spot,
+  * Using ngAnimate allowing you to animate your incoming data into place.
 
 ## Usage
 

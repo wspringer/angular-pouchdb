@@ -79,25 +79,25 @@ pouchdb.provider 'pouchdb', ->
     create: (name, options) ->
       db = new PouchDB(name, options)
       id: db.id
-      put: qify db.put
-      post: qify db.post
-      get: qify db.get
-      remove: qify db.remove
-      bulkDocs: qify db.bulkDocs
-      allDocs: qify db.allDocs
+      put: qify db.put.bind(db)
+      post: qify db.post.bind(db)
+      get: qify db.get.bind(db)
+      remove: qify db.remove.bind(db)
+      bulkDocs: qify db.bulkDocs.bind(db)
+      allDocs: qify db.allDocs.bind(db)
       changes: (options) ->
         clone = angular.copy options
         clone.onChange = (change) ->
           $rootScope.$apply () ->
             options.onChange change
         db.changes clone
-      putAttachment: qify db.putAttachment
-      getAttachment: qify db.getAttachment
-      removeAttachment: qify db.removeAttachment
-      query: qify db.query
-      info: qify db.info
-      compact: qify db.compact
-      revsDiff: qify db.revsDiff
+      putAttachment: qify db.putAttachment.bind(db)
+      getAttachment: qify db.getAttachment.bind(db)
+      removeAttachment: qify db.removeAttachment.bind(db)
+      query: qify db.query.bind(db)
+      info: qify db.info.bind(db)
+      compact: qify db.compact.bind(db)
+      revsDiff: qify db.revsDiff.bind(db)
 
     allDbs: qify PouchDB.allDbs
     destroy: qify PouchDB.destroy

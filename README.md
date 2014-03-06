@@ -5,21 +5,31 @@ A simple wrapper for PouchDB, to make integration into AngularJS applications a 
 * It wraps PouchDB as a provider, allowing you to set global configuration before your dependencies are getting injected.
 * It uses `$q`-based promises instead of callbacks: `db.put({...})` will return a promise with the results, and no longer accepts a callback as the last parameter. The same goes for all other operations that normally required callbacks.
 * It will make sure Angular is aware of asynchronous updates. (It will make sure it uses `$rootScope.$apply()` in cases where it makes sense.)
+* It has a directive for traversing the contents of your database:
+  * Sorting it,
+  * Injecting data coming into your database in the right spot,
+  * Using ngAnimate allowing you to animate your incoming data into place.
 
 ## Usage
 
-First you will need pouchdb as a dependency. 
+First you need to get `angular-pouchdb`. Using bower, it's easy:
+
+```
+bower install -S angular-pouchdb
+```
+
+Then you will need to register pouchdb as a dependency. 
 
 ```javascript
-    var app = angular.module('app', ['pouchdb']);
+var app = angular.module('app', ['pouchdb']);
 ```
     
 Once you have added a dependency on the pouchdb *module*, you will have the ability to inject the pouchdb object into your services:
 
 ```javascript
-    angular.factory('someservice', function(pouchdb) {
-      // Do something with pouchdb.
-    });
+angular.factory('someservice', function(pouchdb) {
+  // Do something with pouchdb.
+});
 ```
 
 ### Creating and destroying a database 
@@ -27,13 +37,13 @@ Once you have added a dependency on the pouchdb *module*, you will have the abil
 Once you have a reference to the pouchdb object, creating a database is easy:
 
 ```javascript
-    var db = pouchdb.create('testdb');
+var db = pouchdb.create('testdb');
 ```
     
 And destroying it is equally easy:
 
 ```javascript    
-    pouchdb.destroy('testdb');
+pouchdb.destroy('testdb');
 ``` 
 
 ### Interacting with the database
@@ -43,13 +53,13 @@ The `db` object created above allows you to call all of the operations PouchDB d
 Adding a document is as simple as:
 
 ```javascript
-    db.put({_id: 'foo', name: 'bar'});
+db.put({_id: 'foo', name: 'bar'});
 ```
 
 But if you want to handle the results returned by PouchDB, you need to do something with the promise returned.
     
 ```javascript
-    db.put({_id: 'foo', name: 'bar'}).then(function(response) {
+db.put({_id: 'foo', name: 'bar'}).then(function(response) {
         // Do something with the response
     }).catch(function(error) {
         // Do something with the error
@@ -68,15 +78,15 @@ promises are wrapped as `$q` promises.
 There might be times where you have multiple services using *the same* database. In those cases, it might be a good idea to create your database as a service. Once you've created it like that, you can *inject* your database into all other services. (And make sure it always uses that single database only.)
     
 ```javascript
-    angular.factory('testdb', function(pouchdb) {
-      return pouchdb.create('testdb');
-    });
+angular.factory('testdb', function(pouchdb) {
+    return pouchdb.create('testdb');
+});
     
-    angular.factory('testservice', function(testdb) {
-        return {
-            add: function(obj) { testdb.put(obj); }
-        };
-    });
+angular.factory('testservice', function(testdb) {
+    return {
+        add: function(obj) { testdb.put(obj); }
+    };
+});
 ```
     
 ### ng-repeat for PouchDB

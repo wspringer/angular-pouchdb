@@ -2,54 +2,124 @@ describe('pouchdb', function () {
 
   beforeEach(module('pouchdb'));
 
-  it('should support replication', inject(function(pouchdb, $rootScope){
-    var retrieved = null;
+  function recreate(name, callback) {
+    var db = new PouchDB(name);
+    db.destroy().then(function() {
+      db = new PouchDB(name);
+      callback(db);
+    })
+  }
+
+  var doc = {
+    _id: 'foo',
+    title: 'bar'
+  };
+
+
+
+  it('should support replication', inject(function (pouchdb, $rootScope) {
+
     var replicated = false;
-    var stored = false;
-    var doc = {
-      _id: 'foo',
-      title: 'bar'
-    };
+    var local, remote;
 
-    var db = pouchdb.create('replication');
-    var remote = new PouchDB('remote');
-
-    runs(function() {
-      db.replicate.to(remote, {
-        onChange: function() {
-          replicated = true;
-        },
-        continuous: true
+    runs(function () {
+      recreate('local1', function(local1) {
+        local = local1;
+        recreate('remote1', function(remote1) {
+          remote = remote1;
+          local.replicate.to(remote, {
+            onChange: function() {
+              replicated = true;
+            }, continous: true
+          });
+          local.put(doc);
+        });
       });
-      db.put(doc).then(function() {
-        stored = true;
-      })
     });
 
-    waitsFor(function() {
+    waitsFor(function () {
       $rootScope.$digest();
       return replicated;
-    }, 'Waiting till done', 2000);
+    }, 'Waiting till replicated', 2000);
 
-    runs(function() {
-      remote.get(doc._id).then(function(value) {
-        retrieved = value;
+    runs(function () {
+      remote.get(doc._id).then(function (value) {
+        expect(value).not.toBeNull();
       });
-    });
-
-    waitsFor(function() {
-      $rootScope.$digest();
-      return retrieved != null;
-    }, 'Waiting till available', 2000);
-
-    runs(function() {
-      expect(retrieved).not.toBeNull();
-      db.destroy().then(function() {
-        remote.destroy();
-      })
     });
 
   }));
+
+
+
+  it('should support remote replication', inject(function (pouchdb, $rootScope) {
+
+    var replicated = false;
+    var local, remote;
+
+    runs(function () {
+      recreate('local2', function(local1) {
+        local = local1;
+        recreate('http://localhost:5984/remote2', function(remote1) {
+          remote = remote1;
+          local.replicate.to(remote, {
+            onChange: function() {
+              replicated = true;
+            }, continous: true
+          });
+          local.put(doc);
+        });
+      });
+    });
+
+    waitsFor(function () {
+      $rootScope.$digest();
+      return replicated;
+    }, 'Waiting till replicated', 2000);
+
+    runs(function () {
+      remote.get(doc._id).then(function (value) {
+        expect(value).not.toBeNull();
+      });
+    });
+
+  }));
+
+
+  it('should support replication from remote', inject(function (pouchdb, $rootScope) {
+
+    var replicated = false;
+    var local, remote;
+
+    runs(function () {
+      recreate('local3', function(local1) {
+        local = local1;
+        recreate('http://localhost:5984/remote3', function(remote1) {
+          remote = remote1;
+          remote.replicate.to(local, {
+            onChange: function() {
+              replicated = true;
+            }, continous: true
+          });
+          remote.put(doc);
+        });
+      });
+    });
+
+    waitsFor(function () {
+      $rootScope.$digest();
+      return replicated;
+    }, 'Waiting till replicated', 2000);
+
+    runs(function () {
+      local.get(doc._id).then(function (value) {
+        expect(value).not.toBeNull();
+      });
+    });
+
+  }));
+
+
 
   it('should allow you to store and retrieve documents', inject(function (pouchdb, $rootScope) {
 

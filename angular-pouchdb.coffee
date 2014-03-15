@@ -98,10 +98,11 @@ pouchdb.provider 'pouchdb', ->
       info: qify db.info.bind(db)
       compact: qify db.compact.bind(db)
       revsDiff: qify db.revsDiff.bind(db)
-
-    allDbs: qify PouchDB.allDbs
-    destroy: qify PouchDB.destroy
-    replicate: PouchDB.replicate
+      replicate:
+        to: (remote, options) -> db.replicate.to(remote, options)
+        from: (remote, options) -> db.replicate.from(remote, options)
+        sync: (remote, options) -> db.replicate.sync(remote, options)
+      destroy: qify db.destroy.bind(db)
 
 # pouch-repeat="name in collection"
 pouchdb.directive 'pouchRepeat',

@@ -21,7 +21,7 @@
   ],
   "dependencies": {
     "angular": "~1.2.3",
-    "pouchdb": "2.0.0"
+    "pouchdb": "/Users/wilfred/workspace/pouchdb/dist/pouchdb-nightly.js"
   },
   "devDependencies": {
     "angular-mocks": "~1.2.3"

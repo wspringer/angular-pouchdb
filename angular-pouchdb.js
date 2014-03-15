@@ -122,12 +122,21 @@ THE SOFTWARE.
               query: qify(db.query.bind(db)),
               info: qify(db.info.bind(db)),
               compact: qify(db.compact.bind(db)),
-              revsDiff: qify(db.revsDiff.bind(db))
+              revsDiff: qify(db.revsDiff.bind(db)),
+              replicate: {
+                to: function(remote, options) {
+                  return db.replicate.to(remote, options);
+                },
+                from: function(remote, options) {
+                  return db.replicate.from(remote, options);
+                },
+                sync: function(remote, options) {
+                  return db.replicate.sync(remote, options);
+                }
+              },
+              destroy: qify(db.destroy.bind(db))
             };
-          },
-          allDbs: qify(PouchDB.allDbs),
-          destroy: qify(PouchDB.destroy),
-          replicate: PouchDB.replicate
+          }
         };
       }
     };

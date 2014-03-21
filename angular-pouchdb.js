@@ -73,14 +73,14 @@ THE SOFTWARE.
       withAllDbsEnabled: function() {
         return PouchDB.enableAllDbs = true;
       },
-      $get: function($q, $rootScope) {
+      $get: function($q, $rootScope, $timeout) {
         var qify;
         qify = function(fn) {
           return function() {
             var args, callback, deferred;
             deferred = $q.defer();
             callback = function(err, res) {
-              return $rootScope.$apply(function() {
+              return $timeout(function() {
                 if (err) {
                   return deferred.reject(err);
                 } else {
@@ -124,15 +124,9 @@ THE SOFTWARE.
               compact: qify(db.compact.bind(db)),
               revsDiff: qify(db.revsDiff.bind(db)),
               replicate: {
-                to: function(remote, options) {
-                  return db.replicate.to(remote, options);
-                },
-                from: function(remote, options) {
-                  return db.replicate.from(remote, options);
-                },
-                sync: function(remote, options) {
-                  return db.replicate.sync(remote, options);
-                }
+                to: db.replicate.to.bind(db),
+                from: db.replicate.from.bind(db),
+                sync: db.replicate.sync.bind(db)
               },
               destroy: qify(db.destroy.bind(db))
             };
@@ -235,23 +229,29 @@ THE SOFTWARE.
             var process;
             process = function(result) {
               var row, _i, _len, _ref1, _results;
+              console.info('Processing all docs', result);
               _ref1 = result.rows;
               _results = [];
               for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
                 row = _ref1[_i];
+                console.info('Adding row');
                 _results.push(add(row.doc));
               }
               return _results;
             };
+            console.info('Getting all docs');
             $scope[collection].allDocs({
               include_docs: true
             }).then(process);
+            console.info('Setting up listener');
             $scope[collection].info().then(function(info) {
+              console.info('Got info');
               return $scope[collection].changes({
                 include_docs: true,
                 continuous: true,
                 since: info.update_seq,
                 onChange: function(update) {
+                  console.info('Got update');
                   if (update.deleted) {
                     return remove(update.doc._id);
                   } else {

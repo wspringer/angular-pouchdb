@@ -60,13 +60,13 @@ pouchdb.provider 'pouchdb', ->
   withAllDbsEnabled: ->
     PouchDB.enableAllDbs = true
 
-  $get: ($q, $rootScope) ->
+  $get: ($q, $rootScope, $timeout) ->
 
     qify = (fn) ->
       () ->
         deferred = $q.defer()
         callback = (err, res) ->
-          $rootScope.$apply () ->
+          $timeout () ->
             if (err)
               deferred.reject err
             else
@@ -99,9 +99,9 @@ pouchdb.provider 'pouchdb', ->
       compact: qify db.compact.bind(db)
       revsDiff: qify db.revsDiff.bind(db)
       replicate:
-        to: (remote, options) -> db.replicate.to(remote, options)
-        from: (remote, options) -> db.replicate.from(remote, options)
-        sync: (remote, options) -> db.replicate.sync(remote, options)
+        to: db.replicate.to.bind(db)
+        from: db.replicate.from.bind(db)
+        sync: db.replicate.sync.bind(db)
       destroy: qify db.destroy.bind(db)
 
 # pouch-repeat="name in collection"
@@ -182,16 +182,22 @@ pouchdb.directive 'pouchRepeat',
           , () ->
             # Not using query, since the map function doesn't accept emit as an argument just yet.
             process = (result) ->
+              console.info 'Processing all docs', result
               for row in result.rows
+                console.info 'Adding row'
                 add(row.doc)
+            console.info 'Getting all docs'
             $scope[collection].allDocs({include_docs: true}).then(process)
 
+            console.info 'Setting up listener'
             $scope[collection].info().then (info) ->
+              console.info 'Got info'
               $scope[collection].changes
                 include_docs: true
                 continuous: true
                 since: info.update_seq
                 onChange: (update) ->
+                  console.info 'Got update'
                   if update.deleted then remove(update.doc._id)
                   else
                     if exists(blocks, (block) -> block.doc._id == update.doc._id)

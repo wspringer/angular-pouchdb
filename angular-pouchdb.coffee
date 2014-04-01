@@ -60,7 +60,7 @@ pouchdb.provider 'pouchdb', ->
   withAllDbsEnabled: ->
     PouchDB.enableAllDbs = true
 
-  $get: ($q, $rootScope) ->
+  $get: ['$q', '$rootScope', ($q, $rootScope) ->
 
     qify = (fn) ->
       () ->
@@ -103,7 +103,8 @@ pouchdb.provider 'pouchdb', ->
         from: (remote, options) -> db.replicate.from(remote, options)
         sync: (remote, options) -> db.replicate.sync(remote, options)
       destroy: qify db.destroy.bind(db)
-
+  ]
+  
 # pouch-repeat="name in collection"
 pouchdb.directive 'pouchRepeat',
   ($parse, $animate) ->

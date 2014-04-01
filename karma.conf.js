@@ -11,7 +11,7 @@ module.exports = function(config) {
     files: [
       'bower_components/angular/angular.js',
       'bower_components/angular-mocks/angular-mocks.js',
-      'bower_components/pouchdb/index.js',
+      'bower_components/pouchdb/dist/pouchdb-nightly.js',
       'angular-pouchdb.js',
       'test/**/*-spec.js'
     ],
@@ -42,7 +42,7 @@ module.exports = function(config) {
 
     // level of logging
     // possible values: LOG_DISABLE || LOG_ERROR || LOG_WARN || LOG_INFO || LOG_DEBUG
-    logLevel: LOG_INFO,
+    logLevel: config.LOG_INFO,
 
 
     // enable / disable watching file and executing tests whenever any file changes

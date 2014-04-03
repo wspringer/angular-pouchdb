@@ -182,22 +182,15 @@ pouchdb.directive 'pouchRepeat',
           , () ->
             # Not using query, since the map function doesn't accept emit as an argument just yet.
             process = (result) ->
-              console.info 'Processing all docs', result
               for row in result.rows
-                console.info 'Adding row'
                 add(row.doc)
-            console.info 'Getting all docs'
             $scope[collection].allDocs({include_docs: true}).then(process)
-
-            console.info 'Setting up listener'
             $scope[collection].info().then (info) ->
-              console.info 'Got info'
               $scope[collection].changes
                 include_docs: true
                 continuous: true
                 since: info.update_seq
                 onChange: (update) ->
-                  console.info 'Got update'
                   if update.deleted then remove(update.doc._id)
                   else
                     if exists(blocks, (block) -> block.doc._id == update.doc._id)

@@ -17,6 +17,7 @@
 # v. 0.1.5
 
 * Fixes for PouchDB 2.0
+* Upgrade bower dependency to 2.1.0
 
 
 

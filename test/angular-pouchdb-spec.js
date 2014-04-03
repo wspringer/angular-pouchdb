@@ -1,3 +1,6 @@
+/**
+ * Some of these tests require CouchDB to be running on a default port with default permissions.
+ */
 describe('pouchdb', function () {
 
   beforeEach(module('pouchdb'));
@@ -122,27 +125,28 @@ describe('pouchdb', function () {
 
 
   it('should allow you to store and retrieve documents', inject(function (pouchdb, $rootScope) {
-
-    var stored = false;
     var done = false;
     var doc = {
       _id: 'foo',
       title: 'bar'
     };
-    var db = pouchdb.create('test');
     runs(function () {
-      db.put(doc).then(function () {
-        stored = true;
-        db.get(doc._id).then(function (result) {
-          var retrieved = result;
-          expect(retrieved).not.toBeNull();
-          expect(retrieved.title).toBe('bar');
-          db.destroy().then(function () {
-            done = true;
+      recreate('test', function(db) {
+        db.put(doc).then(function () {
+          db.get(doc._id).then(function (result) {
+            var retrieved = result;
+            expect(retrieved).not.toBeNull();
+            expect(retrieved.title).toBe('bar');
+            db.destroy().then(function () {
+              done = true;
+            });
+          }).catch(function (error) {
+            dump(error);
           });
+          $rootScope.$digest();
+        }).catch(function (error) {
+          dump(error);
         });
-      }).catch(function (error) {
-        dump(error);
       });
     });
 

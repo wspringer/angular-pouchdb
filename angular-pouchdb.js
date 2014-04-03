@@ -229,29 +229,23 @@ THE SOFTWARE.
             var process;
             process = function(result) {
               var row, _i, _len, _ref1, _results;
-              console.info('Processing all docs', result);
               _ref1 = result.rows;
               _results = [];
               for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
                 row = _ref1[_i];
-                console.info('Adding row');
                 _results.push(add(row.doc));
               }
               return _results;
             };
-            console.info('Getting all docs');
             $scope[collection].allDocs({
               include_docs: true
             }).then(process);
-            console.info('Setting up listener');
             $scope[collection].info().then(function(info) {
-              console.info('Got info');
               return $scope[collection].changes({
                 include_docs: true,
                 continuous: true,
                 since: info.update_seq,
                 onChange: function(update) {
-                  console.info('Got update');
                   if (update.deleted) {
                     return remove(update.doc._id);
                   } else {

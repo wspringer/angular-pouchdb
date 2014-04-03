@@ -60,13 +60,13 @@ pouchdb.provider 'pouchdb', ->
   withAllDbsEnabled: ->
     PouchDB.enableAllDbs = true
 
-  $get: ($q, $rootScope) ->
+  $get: ($q, $rootScope, $timeout) ->
 
     qify = (fn) ->
       () ->
         deferred = $q.defer()
         callback = (err, res) ->
-          $rootScope.$apply () ->
+          $timeout () ->
             if (err)
               deferred.reject err
             else
@@ -79,29 +79,30 @@ pouchdb.provider 'pouchdb', ->
     create: (name, options) ->
       db = new PouchDB(name, options)
       id: db.id
-      put: qify db.put
-      post: qify db.post
-      get: qify db.get
-      remove: qify db.remove
-      bulkDocs: qify db.bulkDocs
-      allDocs: qify db.allDocs
+      put: qify db.put.bind(db)
+      post: qify db.post.bind(db)
+      get: qify db.get.bind(db)
+      remove: qify db.remove.bind(db)
+      bulkDocs: qify db.bulkDocs.bind(db)
+      allDocs: qify db.allDocs.bind(db)
       changes: (options) ->
         clone = angular.copy options
         clone.onChange = (change) ->
           $rootScope.$apply () ->
             options.onChange change
         db.changes clone
-      putAttachment: qify db.putAttachment
-      getAttachment: qify db.getAttachment
-      removeAttachment: qify db.removeAttachment
-      query: qify db.query
-      info: qify db.info
-      compact: qify db.compact
-      revsDiff: qify db.revsDiff
-
-    allDbs: qify PouchDB.allDbs
-    destroy: qify PouchDB.destroy
-    replicate: PouchDB.replicate
+      putAttachment: qify db.putAttachment.bind(db)
+      getAttachment: qify db.getAttachment.bind(db)
+      removeAttachment: qify db.removeAttachment.bind(db)
+      query: qify db.query.bind(db)
+      info: qify db.info.bind(db)
+      compact: qify db.compact.bind(db)
+      revsDiff: qify db.revsDiff.bind(db)
+      replicate:
+        to: db.replicate.to.bind(db)
+        from: db.replicate.from.bind(db)
+        sync: db.replicate.sync.bind(db)
+      destroy: qify db.destroy.bind(db)
 
 # pouch-repeat="name in collection"
 pouchdb.directive 'pouchRepeat',
@@ -184,7 +185,6 @@ pouchdb.directive 'pouchRepeat',
               for row in result.rows
                 add(row.doc)
             $scope[collection].allDocs({include_docs: true}).then(process)
-
             $scope[collection].info().then (info) ->
               $scope[collection].changes
                 include_docs: true

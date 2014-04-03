@@ -60,7 +60,7 @@ pouchdb.provider 'pouchdb', ->
   withAllDbsEnabled: ->
     PouchDB.enableAllDbs = true
 
-  $get: ($q, $rootScope, $timeout) ->
+  $get: ['$q', '$rootScope', '$timeout', ($q, $rootScope, $timeout) ->
 
     qify = (fn) ->
       () ->
@@ -103,10 +103,11 @@ pouchdb.provider 'pouchdb', ->
         from: db.replicate.from.bind(db)
         sync: db.replicate.sync.bind(db)
       destroy: qify db.destroy.bind(db)
+  ]
 
 # pouch-repeat="name in collection"
 pouchdb.directive 'pouchRepeat',
-  ($parse, $animate) ->
+  ['$parse', '$animate', ($parse, $animate) ->
     transclude: 'element'
     priority: 10
     compile: (elem, attrs, transclude) ->
@@ -198,3 +199,4 @@ pouchdb.directive 'pouchRepeat',
                     else
                       add(update.doc)
             return
+  ]

@@ -14,6 +14,10 @@
 * Using ngAnimate to add, remove and move elements.
 * Switching to PouchDB 2.0
 
+# v. 0.1.5
+
+* Fixes for PouchDB 2.0
+
 
 
 

@@ -99,8 +99,8 @@ pouchdb.provider 'pouchdb', ->
       compact: qify db.compact.bind(db)
       revsDiff: qify db.revsDiff.bind(db)
       replicate:
-        to: db.replicate.to.bind(db)
-        from: db.replicate.from.bind(db)
+        to: PouchDB.replicate.bind(db, db)
+        from: (src, opts) -> PouchDB.replicate.bind(db)(src, db, opts)
         sync: db.replicate.sync.bind(db)
       destroy: qify db.destroy.bind(db)
   ]

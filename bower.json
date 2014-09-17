@@ -1,6 +1,6 @@
 {
   "name": "angular-pouchdb",
-  "version": "0.1.6-SNAPSHOT",
+  "version": "0.2.0",
   "authors": [
     "Wilfred Springer <wilfredspringer@gmail.com>"
   ],
@@ -20,10 +20,10 @@
     "karma.conf.js"
   ],
   "dependencies": {
-    "angular": "~1.2.3",
-    "pouchdb": "~2.0.1"
+    "angular": "~1.3",
+    "pouchdb": "~3.0.5"
   },
   "devDependencies": {
-    "angular-mocks": "~1.2.3"
+    "angular-mocks": "~1.3"
   }
 }

@@ -86,11 +86,18 @@ pouchdb.provider 'pouchdb', ->
       bulkDocs: qify db.bulkDocs.bind(db)
       allDocs: qify db.allDocs.bind(db)
       changes: (options) ->
-        clone = angular.copy options
-        clone.onChange = (change) ->
-          $rootScope.$apply () ->
-            options.onChange change
-        db.changes clone
+        changes = db.changes options
+        deferred = $q.defer()
+        changes.on 'change', (change) ->
+          $timeout () ->
+            deferred.notify {change: change, changes: changes}
+        changes.on 'complete', (res) ->
+          $timeout () ->
+            deferred.resolve res
+        changes.on 'err', (err) ->
+          $timeout () ->
+            deferred.reject(err)
+        deferred.promise
       putAttachment: qify db.putAttachment.bind(db)
       getAttachment: qify db.getAttachment.bind(db)
       removeAttachment: qify db.removeAttachment.bind(db)

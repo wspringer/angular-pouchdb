@@ -1,5 +1,7 @@
 # AngularJS PouchDB Support
 
+[![Build Status][travis-image]][travis-url]
+
 A simple wrapper for PouchDB, to make integration into AngularJS applications a breeze. So what does it do?
 
 * It wraps PouchDB as a provider, allowing you to set global configuration before your dependencies are getting injected.
@@ -9,6 +11,9 @@ A simple wrapper for PouchDB, to make integration into AngularJS applications a 
   * Sorting it,
   * Injecting data coming into your database in the right spot,
   * Using ngAnimate allowing you to animate your incoming data into place.
+
+[travis-image]: https://travis-ci.org/danielzen/angular-pouchdb-1.svg
+[travis-url]: https://travis-ci.org/danielzen/angular-pouchdb-1
 
 ## Usage
 

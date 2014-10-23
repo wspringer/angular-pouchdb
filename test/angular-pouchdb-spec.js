@@ -1,6 +1,8 @@
 /**
  * Some of these tests require CouchDB to be running on a default port with default permissions.
  */
+'use strict';
+
 describe('pouchdb', function () {
 
   var pouchdb;
@@ -33,8 +35,7 @@ describe('pouchdb', function () {
               expect(value, "replication NOT supported").not.toBeNull();
               done();
             });
-          },
-          continous: true
+          }
         });
         local1.put(doc);
       });
@@ -50,8 +51,7 @@ describe('pouchdb', function () {
               expect(value, "local NOT replicated to remote").not.toBeNull();
               done();
             });
-          },
-          continous: true
+          }
         });
         local.put(doc);
       });
@@ -68,7 +68,7 @@ describe('pouchdb', function () {
               expect(value, "remote DID NOT replicate from remote").not.toBeNull();
               done();
             });
-          }, continous: true
+          }
         });
         remote3.put(doc);
       });

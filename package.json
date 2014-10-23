@@ -1,7 +1,11 @@
 {
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wspringer/angular-pouchdb.git"
+  },
   "devDependencies": {
     "karma": "~0.12",
-    "karma-chrome-launcher": "~0.1.4",
+    "karma-phantomjs-launcher": "~0.1.4",
     "karma-jasmine": "^0.2.2"
   }
 }

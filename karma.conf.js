@@ -11,6 +11,7 @@ module.exports = function(config) {
     files: [
       'bower_components/angular/angular.js',
       'bower_components/angular-mocks/angular-mocks.js',
+      'prototype-bind-polyfill.js',
       'bower_components/pouchdb/dist/pouchdb.js',
       'angular-pouchdb.js',
       'test/**/*-spec.js'
@@ -57,7 +58,7 @@ module.exports = function(config) {
     // - Safari (only Mac)
     // - PhantomJS
     // - IE (only Windows)
-    browsers: ['Chrome'],
+    browsers: ['PhantomJS'],
 
 
     // If browser does not capture in given timeout [ms], kill it

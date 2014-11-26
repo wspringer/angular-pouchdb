@@ -103,6 +103,8 @@ pouchdb.provider 'pouchdb', ->
         from: db.replicate.from.bind(db)
         sync: db.replicate.sync.bind(db)
       destroy: qify db.destroy.bind(db)
+      login: qify db.login.bind(db)
+			getSession: qify db.getSession.bind(db)
   ]
 
 # pouch-repeat="name in collection"

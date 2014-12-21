@@ -6,6 +6,8 @@
 
 ## What this version was doing for an ancient version of PouchDB
 
+([This video](https://www.youtube.com/watch?v=Zf1cnvVDkDg) demonstrates using Angular PouchDB with Couchbase's Sync Gateway for user managent and authentication. Note that the pouch-repeat directive is doing all the hard work in making sure the newly added contacts end up at the proper place in the list, and that everything is animated into place.)
+
 A simple wrapper for PouchDB, to make integration into AngularJS applications a breeze. So what does it do?
 
 * It wraps PouchDB as a provider, allowing you to set global configuration before your dependencies are getting injected.

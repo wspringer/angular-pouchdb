@@ -1,5 +1,11 @@
 # AngularJS PouchDB Support
 
+## Word of caution
+
+*I am no longer maintaining this project. On the plus side, this project has been forked a number of times. @tlvince [has taken this project and moved it into an angular-pouchdb organization, and updated it to the latest version of PouchDB. He also split the project into smaller modules](https://github.com/angular-pouchdb/angular-pouchdb). @RangerRick has[ gone in a similar direction, but then continued to work on the CoffeeScript version, rather than replacing it with a JavaScript based version.](https://github.com/RangerRick/angular-pouchdb/network).*
+
+## What this version was doing for an ancient version of PouchDB
+
 A simple wrapper for PouchDB, to make integration into AngularJS applications a breeze. So what does it do?
 
 * It wraps PouchDB as a provider, allowing you to set global configuration before your dependencies are getting injected.

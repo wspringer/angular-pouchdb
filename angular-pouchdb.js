@@ -108,14 +108,28 @@ THE SOFTWARE.
                 bulkDocs: qify(db.bulkDocs.bind(db)),
                 allDocs: qify(db.allDocs.bind(db)),
                 changes: function(options) {
-                  var clone;
-                  clone = angular.copy(options);
-                  clone.onChange = function(change) {
-                    return $rootScope.$apply(function() {
-                      return options.onChange(change);
+                  var changes, deferred;
+                  changes = db.changes(options);
+                  deferred = $q.defer();
+                  changes.on('change', function(change) {
+                    return $timeout(function() {
+                      return deferred.notify({
+                        change: change,
+                        changes: changes
+                      });
                     });
-                  };
-                  return db.changes(clone);
+                  });
+                  changes.on('complete', function(res) {
+                    return $timeout(function() {
+                      return deferred.resolve(res);
+                    });
+                  });
+                  changes.on('err', function(err) {
+                    return $timeout(function() {
+                      return deferred.reject(err);
+                    });
+                  });
+                  return deferred.promise;
                 },
                 putAttachment: qify(db.putAttachment.bind(db)),
                 getAttachment: qify(db.getAttachment.bind(db)),

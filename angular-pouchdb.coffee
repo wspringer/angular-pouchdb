@@ -99,10 +99,10 @@ pouchdb.provider 'pouchdb', ->
       compact: qify db.compact.bind(db)
       revsDiff: qify db.revsDiff.bind(db)
       replicate:
-        to: db.replicate.to.bind(db)
-        from: db.replicate.from.bind(db)
-        sync: db.replicate.sync.bind(db)
-      destroy: qify db.destroy.bind(db)
+        to: PouchDB.replicate.bind(db, db)
+        from: (src, opts) -> PouchDB.replicate.bind(db)(src, db, opts)
+        sync: PouchDB.sync.bind(db, db)
+      destroy: qify PouchDB.destroy.bind(db, db)
   ]
 
 # pouch-repeat="name in collection"

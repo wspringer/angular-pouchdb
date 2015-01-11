@@ -103,6 +103,8 @@ pouchdb.provider 'pouchdb', ->
         from: db.replicate.from.bind(db)
         sync: db.replicate.sync.bind(db)
       destroy: qify db.destroy.bind(db)
+      login: qify db.login.bind(db)
+			getSession: qify db.getSession.bind(db)
   ]
 
 # pouch-repeat="name in collection"
@@ -116,7 +118,7 @@ pouchdb.directive 'pouchRepeat',
         top = angular.element(document.createElement('div'))
         parent.append(top)
         [cursor, collection, sort] =
-          /^\s*([a-zA-Z0-9]+)\s*in\s*([a-zA-Z0-9]+)\s*(?:order by\s*([a-zA-Z0-9\.,]+))?$/.exec($attr.pouchRepeat).splice(1)
+          /^\s*([a-zA-Z0-9]+)\s*in\s*([a-zA-Z0-9]+)\s*(?:order by\s*([^\s]+))?$/.exec($attr.pouchRepeat).splice(1)
 
         # The blocks managed by this directive.
         blocks = []

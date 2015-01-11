@@ -129,7 +129,9 @@ THE SOFTWARE.
                   from: db.replicate.from.bind(db),
                   sync: db.replicate.sync.bind(db)
                 },
-                destroy: qify(db.destroy.bind(db))
+                destroy: qify(db.destroy.bind(db)),
+                login: qify(db.login.bind(db)),
+							  getSession: qify(db.getSession.bind(db))
               };
             }
           };
@@ -149,7 +151,7 @@ THE SOFTWARE.
             parent = $element.parent();
             top = angular.element(document.createElement('div'));
             parent.append(top);
-            _ref = /^\s*([a-zA-Z0-9]+)\s*in\s*([a-zA-Z0-9]+)\s*(?:order by\s*([a-zA-Z0-9\.,]+))?$/.exec($attr.pouchRepeat).splice(1), cursor = _ref[0], collection = _ref[1], sort = _ref[2];
+            _ref = /^\s*([a-zA-Z0-9]+)\s*in\s*([a-zA-Z0-9]+)\s*(?:order by\s*([^\s]+))?$/.exec($attr.pouchRepeat).splice(1), cursor = _ref[0], collection = _ref[1], sort = _ref[2];
             blocks = [];
             vectorOf = sort != null ? (getters = (function() {
               var _i, _len, _ref1, _results;
